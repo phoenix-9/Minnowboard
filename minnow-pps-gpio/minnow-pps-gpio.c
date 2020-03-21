@@ -18,6 +18,7 @@
 #include <linux/platform_device.h>
 #include <linux/module.h>
 #include <linux/pps-gpio.h>
+#include <linux/gpio/consumer.h>
 
 #if (!defined(CONFIG_PPS_CLIENT_GPIO_MODULE) && !defined(CONFIG_PPS_CLIENT_GPIO))
         #error PPS_CLIENT_GPIO is required.
@@ -29,8 +30,8 @@
 static struct pps_gpio_platform_data pps_gpio_info = {
 	.assert_falling_edge	= false,
 	.capture_clear		= false,
-	.gpio_pin		= PPS_GPIO,
-	.gpio_label		= "PPS",
+	/* .gpio_pin		= PPS_GPIO, */
+	/* .gpio_label		= "PPS", */
 };
 
 static struct platform_device pps_gpio_device = {
@@ -54,6 +55,8 @@ static int __init minnow_pps_gpio_module_init(void)
 		pr_err("pps-gpio module is unavailable.\n");
 		goto out;
 	}
+
+	pps_gpio_info.gpio_pin = gpio_to_desc( PPS_GPIO );
 
 	err = platform_device_register(&pps_gpio_device);
 	if (err)
